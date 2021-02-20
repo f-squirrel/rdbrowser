@@ -34,6 +34,20 @@ fn main() {
                         .takes_value(false),
                 )
                 .arg(
+                    Arg::with_name("value_hex")
+                        .long("value_hex")
+                        .help("Value provided in hex format")
+                        .required(false)
+                        .takes_value(false),
+                )
+                .arg(
+                    Arg::with_name("key_hex")
+                        .long("key_hex")
+                        .help("Key provided in hex format")
+                        .required(false)
+                        .takes_value(false),
+                )
+                .arg(
                     Arg::with_name("KEY")
                         .help("Value to put")
                         .required(true)
@@ -53,6 +67,20 @@ fn main() {
                     Arg::with_name("hex")
                         .long("hex")
                         .help("Key and value provided in hex format")
+                        .required(false)
+                        .takes_value(false),
+                )
+                .arg(
+                    Arg::with_name("value_hex")
+                        .long("value_hex")
+                        .help("Value provided in hex format")
+                        .required(false)
+                        .takes_value(false),
+                )
+                .arg(
+                    Arg::with_name("key_hex")
+                        .long("key_hex")
+                        .help("Key provided in hex format")
                         .required(false)
                         .takes_value(false),
                 )

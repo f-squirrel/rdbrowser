@@ -17,12 +17,14 @@ pub fn create(matches: ArgMatches) -> Box<dyn Command> {
             db,
             key: put.value_of("KEY").unwrap().into(),
             value: put.value_of("VALUE").unwrap().into(),
-            is_hex: put.is_present("hex"),
+            key_hex: put.is_present("key_hex") || put.is_present("hex"),
+            value_hex: put.is_present("value_hex") || put.is_present("hex"),
         }),
         ("get", Some(get)) => Box::new(Get {
             db,
             key: get.value_of("KEY").unwrap().into(),
-            is_hex: get.is_present("hex"),
+            key_hex: get.is_present("key_hex") || get.is_present("hex"),
+            value_hex: get.is_present("value_hex") || get.is_present("hex"),
         }),
         ("", None) => unreachable!(),
         _ => unreachable!(),
@@ -34,21 +36,21 @@ pub struct Put {
     db: DB,
     key: String,
     value: String,
-    is_hex: bool,
+    key_hex: bool,
+    value_hex: bool,
 }
 
 impl Command for Put {
     fn run(&self) {
-        let (key, value) = if self.is_hex {
-            (
-                hex::decode(self.key.as_bytes()).unwrap(),
-                hex::decode(self.value.as_bytes()).unwrap(),
-            )
+        let key = if self.key_hex {
+            hex::decode(self.key.as_bytes()).unwrap()
         } else {
-            (
-                self.key.clone().into_bytes(),
-                self.value.clone().into_bytes(),
-            )
+            self.key.clone().into_bytes()
+        };
+        let value = if self.value_hex {
+            hex::decode(self.value.as_bytes()).unwrap()
+        } else {
+            self.value.clone().into_bytes()
         };
         match self.db.put(key, value) {
             Ok(_) => {}
@@ -66,12 +68,13 @@ impl Command for Put {
 pub struct Get {
     db: DB,
     key: String,
-    is_hex: bool,
+    key_hex: bool,
+    value_hex: bool,
 }
 
 impl Command for Get {
     fn run(&self) {
-        let key = if self.is_hex {
+        let key = if self.key_hex {
             hex::decode(self.key.as_bytes()).unwrap()
         } else {
             self.key.clone().into_bytes()
@@ -81,7 +84,7 @@ impl Command for Get {
                 println!("Not Found???");
             }
             Ok(Some(content)) => {
-                let output = if self.is_hex {
+                let output = if self.value_hex {
                     hex::encode(content)
                 } else {
                     String::from_utf8(content).unwrap()

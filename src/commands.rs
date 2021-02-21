@@ -21,7 +21,7 @@ pub fn create(matches: ArgMatches) -> Box<dyn Command> {
 }
 
 #[derive(Debug)]
-pub struct Put {
+struct Put {
     db: DB,
     key: String,
     value: String,
@@ -66,7 +66,7 @@ impl Command for Put {
 }
 
 #[derive(Debug)]
-pub struct Get {
+struct Get {
     db: DB,
     key: String,
     key_hex: bool,

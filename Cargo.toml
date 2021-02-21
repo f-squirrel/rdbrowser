@@ -13,3 +13,8 @@ edition = "2018"
 clap = "~2.33.3"
 rocksdb = "0.15.0"
 hex = "0.4.2"
+
+[dev-dependencies]
+assert_cmd = "1.0.3"
+predicates = "1"
+tempfile = "3.2.0"

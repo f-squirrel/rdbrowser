@@ -15,6 +15,7 @@ pub fn create(matches: ArgMatches) -> Box<dyn Command> {
     match matches.subcommand() {
         ("put", Some(put)) => Box::new(Put::new(db, put)),
         ("get", Some(get)) => Box::new(Get::new(db, get)),
+        ("delete", Some(delete)) => Box::new(Delete::new(db, delete)),
         _ => unreachable!(),
     }
 }
@@ -104,6 +105,39 @@ impl Command for Get {
             }
             Err(error) => {
                 panic!("Failed to put key: {}, error: {}", self.key, error);
+            }
+        };
+    }
+}
+
+#[derive(Debug)]
+struct Delete {
+    db: DB,
+    key: String,
+    key_hex: bool,
+}
+
+impl Delete {
+    fn new(db: DB, matches: &ArgMatches) -> Delete {
+        Delete {
+            db,
+            key: matches.value_of("KEY").unwrap().into(),
+            key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
+        }
+    }
+}
+
+impl Command for Delete {
+    fn run(&self) {
+        let key = if self.key_hex {
+            hex::decode(self.key.as_bytes()).unwrap()
+        } else {
+            self.key.clone().into_bytes()
+        };
+        match self.db.delete(key) {
+            Ok(_) => {}
+            Err(error) => {
+                panic!("Failed to delete key: {} , error: {}", self.key, error);
             }
         };
     }

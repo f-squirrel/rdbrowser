@@ -92,7 +92,31 @@ pub fn get_cmd_args() -> ArgMatches<'static> {
                 )
                 .arg(
                     Arg::with_name("KEY")
-                        .help("Value to put")
+                        .help("Key to put")
+                        .required(true)
+                        .index(1),
+                ),
+        )
+        .subcommand(
+            SubCommand::with_name("delete")
+                .about("Deletes given key from to the DB")
+                .arg(
+                    Arg::with_name("hex")
+                        .long("hex")
+                        .help("Key in hex format")
+                        .required(false)
+                        .takes_value(false),
+                )
+                .arg(
+                    Arg::with_name("key_hex")
+                        .long("key_hex")
+                        .help("Key provided in hex format")
+                        .required(false)
+                        .takes_value(false),
+                )
+                .arg(
+                    Arg::with_name("KEY")
+                        .help("Key to delete")
                         .required(true)
                         .index(1),
                 ),

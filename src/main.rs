@@ -1,5 +1,3 @@
-extern crate clap;
-
 mod cmd_parser;
 mod commands;
 

@@ -4,9 +4,16 @@ pub fn get_cmd_args() -> ArgMatches<'static> {
     App::new("rdBrowser")
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .setting(AppSettings::ColoredHelp)
-        .version("0.1")
-        .author("Dmitry Danilov")
-        .about("CLI Browser for RocksDB\nhttps://github.com/f-squirrel/rdbrowser")
+        .version(env!("CARGO_PKG_VERSION"))
+        .author(env!("CARGO_PKG_AUTHORS"))
+        .about(
+            format!(
+                "{}\n{}",
+                env!("CARGO_PKG_DESCRIPTION"),
+                env!("CARGO_PKG_HOMEPAGE")
+            )
+            .as_str(),
+        )
         .arg(
             Arg::with_name("db")
                 .long("db")

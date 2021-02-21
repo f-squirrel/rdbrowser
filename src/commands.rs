@@ -13,19 +13,8 @@ pub fn create(matches: ArgMatches) -> Box<dyn Command> {
     //TODO(DD): handle in a more elegant way, i.e. not crash
     let db = DB::open(&opts, matches.value_of("db").unwrap()).unwrap();
     match matches.subcommand() {
-        ("put", Some(put)) => Box::new(Put {
-            db,
-            key: put.value_of("KEY").unwrap().into(),
-            value: put.value_of("VALUE").unwrap().into(),
-            key_hex: put.is_present("key_hex") || put.is_present("hex"),
-            value_hex: put.is_present("value_hex") || put.is_present("hex"),
-        }),
-        ("get", Some(get)) => Box::new(Get {
-            db,
-            key: get.value_of("KEY").unwrap().into(),
-            key_hex: get.is_present("key_hex") || get.is_present("hex"),
-            value_hex: get.is_present("value_hex") || get.is_present("hex"),
-        }),
+        ("put", Some(put)) => Box::new(Put::new(db, put)),
+        ("get", Some(get)) => Box::new(Get::new(db, get)),
         ("", None) => unreachable!(),
         _ => unreachable!(),
     }
@@ -38,6 +27,18 @@ pub struct Put {
     value: String,
     key_hex: bool,
     value_hex: bool,
+}
+
+impl Put {
+    fn new(db: DB, matches: &ArgMatches) -> Put {
+        Put {
+            db,
+            key: matches.value_of("KEY").unwrap().into(),
+            value: matches.value_of("VALUE").unwrap().into(),
+            key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
+            value_hex: matches.is_present("value_hex") || matches.is_present("hex"),
+        }
+    }
 }
 
 impl Command for Put {
@@ -70,6 +71,17 @@ pub struct Get {
     key: String,
     key_hex: bool,
     value_hex: bool,
+}
+
+impl Get {
+    fn new(db: DB, matches: &ArgMatches) -> Get {
+        Get {
+            db,
+            key: matches.value_of("KEY").unwrap().into(),
+            key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
+            value_hex: matches.is_present("value_hex") || matches.is_present("hex"),
+        }
+    }
 }
 
 impl Command for Get {

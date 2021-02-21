@@ -4,6 +4,7 @@ pub fn get_cmd_args() -> ArgMatches<'static> {
     App::new("rdBrowser")
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .setting(AppSettings::ColoredHelp)
+        .setting(AppSettings::VersionlessSubcommands)
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .about(
@@ -92,7 +93,7 @@ pub fn get_cmd_args() -> ArgMatches<'static> {
                 )
                 .arg(
                     Arg::with_name("KEY")
-                        .help("Key to put")
+                        .help("Key to get")
                         .required(true)
                         .index(1),
                 ),

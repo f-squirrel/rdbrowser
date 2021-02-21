@@ -1,7 +1,9 @@
-use clap::{App, Arg, ArgMatches, SubCommand};
+use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 
 pub fn get_cmd_args() -> ArgMatches<'static> {
     App::new("rdBrowser")
+        .setting(AppSettings::SubcommandRequiredElseHelp)
+        .setting(AppSettings::ColoredHelp)
         .version("0.1")
         .author("Dmitry Danilov")
         .about("CLI Browser for RocksDB\nhttps://github.com/f-squirrel/rdbrowser")

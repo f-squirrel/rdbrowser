@@ -15,7 +15,6 @@ pub fn create(matches: ArgMatches) -> Box<dyn Command> {
     match matches.subcommand() {
         ("put", Some(put)) => Box::new(Put::new(db, put)),
         ("get", Some(get)) => Box::new(Get::new(db, get)),
-        ("", None) => unreachable!(),
         _ => unreachable!(),
     }
 }

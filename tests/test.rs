@@ -176,3 +176,34 @@ fn basic_delete() -> Result<(), Box<dyn std::error::Error>> {
     cmd.assert().success().stdout("Not Found???\n").code(0);
     Ok(())
 }
+
+#[test]
+fn multiple_word_put_get_delete() -> Result<(), Box<dyn std::error::Error>> {
+    let path = tempdir()?;
+    let key = "aaaa bbbb cccc";
+    let value = "dddd eeee fffff";
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("put")
+        .arg(key)
+        .arg(value);
+    cmd.assert().success();
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--db").arg(path.path()).arg("get").arg(key);
+    cmd.assert()
+        .success()
+        .stdout(format!("{}\n", value))
+        .code(0);
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--db").arg(path.path()).arg("delete").arg(key);
+    cmd.assert().success().code(0);
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--db").arg(path.path()).arg("get").arg(key);
+    cmd.assert().success().stdout("Not Found???\n").code(0);
+    Ok(())
+}

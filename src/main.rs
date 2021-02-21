@@ -1,7 +1,8 @@
 mod cmd_parser;
-mod commands;
+mod command;
+use command::create;
 
 fn main() {
-    let cmd = commands::create(cmd_parser::get_cmd_args());
+    let cmd = create(cmd_parser::get_cmd_args());
     cmd.run();
 }

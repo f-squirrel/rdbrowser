@@ -28,7 +28,7 @@ impl Command for Delete {
             self.key.clone().into_bytes()
         };
         match self.db.delete(key) {
-            Ok(_) => {}
+            Ok(_) => { println!("OK"); }
             Err(error) => {
                 panic!("Failed to delete key: {} , error: {}", self.key, error);
             }

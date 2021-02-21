@@ -31,7 +31,7 @@ impl Command for Get {
         };
         match self.db.get(key) {
             Ok(None) => {
-                println!("Not Found???");
+                println!("Not Found");
             }
             Ok(Some(content)) => {
                 let output = if self.value_hex {
@@ -42,7 +42,7 @@ impl Command for Get {
                 println!("{}", output);
             }
             Err(error) => {
-                panic!("Failed to put key: {}, error: {}", self.key, error);
+                panic!("Failed to get key: {}, error: {}", self.key, error);
             }
         };
     }

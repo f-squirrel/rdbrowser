@@ -51,7 +51,7 @@ fn basic_put_and_get() -> Result<(), Box<dyn std::error::Error>> {
         .arg("put")
         .arg(key)
         .arg(value);
-    cmd.assert().success();
+    cmd.assert().success().stdout("OK\n");
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db").arg(path.path()).arg("get").arg(key);
@@ -75,7 +75,7 @@ fn hex_put_and_get() -> Result<(), Box<dyn std::error::Error>> {
         .arg("--hex")
         .arg(key)
         .arg(value);
-    cmd.assert().success();
+    cmd.assert().success().stdout("OK\n");
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db")
@@ -103,7 +103,7 @@ fn key_hex_put_and_get() -> Result<(), Box<dyn std::error::Error>> {
         .arg("--key_hex")
         .arg(key)
         .arg(value);
-    cmd.assert().success();
+    cmd.assert().success().stdout("OK\n");
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db")
@@ -131,7 +131,7 @@ fn value_hex_put_and_get() -> Result<(), Box<dyn std::error::Error>> {
         .arg("--value_hex")
         .arg(key)
         .arg(value);
-    cmd.assert().success();
+    cmd.assert().success().stdout("OK\n");
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db")
@@ -158,7 +158,7 @@ fn basic_delete() -> Result<(), Box<dyn std::error::Error>> {
         .arg("put")
         .arg(key)
         .arg(value);
-    cmd.assert().success();
+    cmd.assert().success().stdout("OK\n");
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db").arg(path.path()).arg("get").arg(key);
@@ -169,11 +169,11 @@ fn basic_delete() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db").arg(path.path()).arg("delete").arg(key);
-    cmd.assert().success().code(0);
+    cmd.assert().success().stdout("OK\n");
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db").arg(path.path()).arg("get").arg(key);
-    cmd.assert().success().stdout("Not Found???\n").code(0);
+    cmd.assert().success().stdout("Not Found\n").code(0);
     Ok(())
 }
 
@@ -189,7 +189,7 @@ fn multiple_word_put_get_delete() -> Result<(), Box<dyn std::error::Error>> {
         .arg("put")
         .arg(key)
         .arg(value);
-    cmd.assert().success();
+    cmd.assert().success().stdout("OK\n");
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db").arg(path.path()).arg("get").arg(key);
@@ -200,10 +200,10 @@ fn multiple_word_put_get_delete() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db").arg(path.path()).arg("delete").arg(key);
-    cmd.assert().success().code(0);
+    cmd.assert().success().stdout("OK\n");
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db").arg(path.path()).arg("get").arg(key);
-    cmd.assert().success().stdout("Not Found???\n").code(0);
+    cmd.assert().success().stdout("Not Found\n").code(0);
     Ok(())
 }

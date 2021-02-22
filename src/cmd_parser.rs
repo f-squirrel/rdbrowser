@@ -1,5 +1,5 @@
-use crate::command::traits::Command;
 use super::command::{delete, get, put};
+use crate::command::traits::Command;
 use clap::{App, AppSettings, Arg, ArgMatches};
 
 pub fn get_cmd_args() -> ArgMatches<'static> {

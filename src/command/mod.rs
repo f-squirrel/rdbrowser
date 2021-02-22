@@ -1,4 +1,3 @@
-use crate::command::traits::Command;
 use clap::ArgMatches;
 use rocksdb::{Options, DB};
 use std::boxed::Box;

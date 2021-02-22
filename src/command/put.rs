@@ -50,7 +50,7 @@ impl Command for Put {
     }
 
     fn args() -> App<'static, 'static> {
-        SubCommand::with_name("put")
+        SubCommand::with_name(Self::name())
             .about("Puts given key value to the DB")
             .arg(
                 Arg::with_name("hex")
@@ -85,5 +85,9 @@ impl Command for Put {
                     .required(true)
                     .index(2),
             )
+    }
+
+    fn name() -> &'static str {
+        "put"
     }
 }

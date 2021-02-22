@@ -48,7 +48,7 @@ impl Command for Get {
     }
 
     fn args() -> App<'static, 'static> {
-        SubCommand::with_name("get")
+        SubCommand::with_name(Self::name())
             .about("Gets given key value to the DB")
             .arg(
                 Arg::with_name("hex")
@@ -77,5 +77,9 @@ impl Command for Get {
                     .required(true)
                     .index(1),
             )
+    }
+
+    fn name() -> &'static str {
+        "get"
     }
 }

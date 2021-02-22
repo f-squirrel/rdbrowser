@@ -38,7 +38,7 @@ impl Command for Delete {
     }
 
     fn args() -> App<'static, 'static> {
-        SubCommand::with_name("delete")
+        SubCommand::with_name(Self::name())
             .about("Deletes given key from to the DB")
             .arg(
                 Arg::with_name("hex")
@@ -60,5 +60,9 @@ impl Command for Delete {
                     .required(true)
                     .index(1),
             )
+    }
+
+    fn name() -> &'static str {
+        "delete"
     }
 }

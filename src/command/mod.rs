@@ -2,9 +2,9 @@ use clap::ArgMatches;
 use rocksdb::{Options, DB};
 use std::boxed::Box;
 
-mod delete;
-mod get;
-mod put;
+pub mod delete;
+pub mod get;
+pub mod put;
 pub mod traits;
 
 pub fn create(matches: ArgMatches) -> Box<dyn traits::Command> {

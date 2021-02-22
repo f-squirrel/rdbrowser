@@ -1,5 +1,5 @@
 use crate::command::traits::Command;
-use clap::ArgMatches;
+use clap::{App, Arg, ArgMatches, SubCommand};
 use hex;
 use rocksdb::DB;
 
@@ -45,5 +45,37 @@ impl Command for Get {
                 panic!("Failed to get key: {}, error: {}", self.key, error);
             }
         };
+    }
+
+    fn args() -> App<'static, 'static> {
+        SubCommand::with_name("get")
+            .about("Gets given key value to the DB")
+            .arg(
+                Arg::with_name("hex")
+                    .long("hex")
+                    .help("Key and value provided in hex format")
+                    .required(false)
+                    .takes_value(false),
+            )
+            .arg(
+                Arg::with_name("value_hex")
+                    .long("value_hex")
+                    .help("Value provided in hex format")
+                    .required(false)
+                    .takes_value(false),
+            )
+            .arg(
+                Arg::with_name("key_hex")
+                    .long("key_hex")
+                    .help("Key provided in hex format")
+                    .required(false)
+                    .takes_value(false),
+            )
+            .arg(
+                Arg::with_name("KEY")
+                    .help("Key to get")
+                    .required(true)
+                    .index(1),
+            )
     }
 }

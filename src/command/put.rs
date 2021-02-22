@@ -1,5 +1,5 @@
 use crate::command::traits::Command;
-use clap::ArgMatches;
+use clap::{App, Arg, ArgMatches, SubCommand};
 use hex;
 use rocksdb::DB;
 
@@ -37,7 +37,9 @@ impl Command for Put {
             self.value.clone().into_bytes()
         };
         match self.db.put(key, value) {
-            Ok(_) => { println!("OK"); }
+            Ok(_) => {
+                println!("OK");
+            }
             Err(error) => {
                 panic!(
                     "Failed to put key: {} value: {}, error: {}",
@@ -45,5 +47,43 @@ impl Command for Put {
                 );
             }
         };
+    }
+
+    fn args() -> App<'static, 'static> {
+        SubCommand::with_name("put")
+            .about("Puts given key value to the DB")
+            .arg(
+                Arg::with_name("hex")
+                    .long("hex")
+                    .help("Key and value provided in hex format")
+                    .required(false)
+                    .takes_value(false),
+            )
+            .arg(
+                Arg::with_name("value_hex")
+                    .long("value_hex")
+                    .help("Value provided in hex format")
+                    .required(false)
+                    .takes_value(false),
+            )
+            .arg(
+                Arg::with_name("key_hex")
+                    .long("key_hex")
+                    .help("Key provided in hex format")
+                    .required(false)
+                    .takes_value(false),
+            )
+            .arg(
+                Arg::with_name("KEY")
+                    .help("Value to put")
+                    .required(true)
+                    .index(1),
+            )
+            .arg(
+                Arg::with_name("VALUE")
+                    .help("Value to put")
+                    .required(true)
+                    .index(2),
+            )
     }
 }

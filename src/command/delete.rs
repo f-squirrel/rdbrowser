@@ -1,5 +1,5 @@
 use crate::command::traits::Command;
-use clap::ArgMatches;
+use clap::{App, Arg, ArgMatches, SubCommand};
 use hex;
 use rocksdb::DB;
 
@@ -28,10 +28,37 @@ impl Command for Delete {
             self.key.clone().into_bytes()
         };
         match self.db.delete(key) {
-            Ok(_) => { println!("OK"); }
+            Ok(_) => {
+                println!("OK");
+            }
             Err(error) => {
                 panic!("Failed to delete key: {} , error: {}", self.key, error);
             }
         };
+    }
+
+    fn args() -> App<'static, 'static> {
+        SubCommand::with_name("delete")
+            .about("Deletes given key from to the DB")
+            .arg(
+                Arg::with_name("hex")
+                    .long("hex")
+                    .help("Key in hex format")
+                    .required(false)
+                    .takes_value(false),
+            )
+            .arg(
+                Arg::with_name("key_hex")
+                    .long("key_hex")
+                    .help("Key provided in hex format")
+                    .required(false)
+                    .takes_value(false),
+            )
+            .arg(
+                Arg::with_name("KEY")
+                    .help("Key to delete")
+                    .required(true)
+                    .index(1),
+            )
     }
 }

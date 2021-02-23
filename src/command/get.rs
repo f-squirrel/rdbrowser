@@ -2,6 +2,8 @@ use crate::command::traits::Command;
 use clap::{App, Arg, ArgMatches, SubCommand};
 use hex;
 use rocksdb::DB;
+use std::boxed::Box;
+use std::error::Error;
 
 #[derive(Debug)]
 pub struct Get {
@@ -23,7 +25,7 @@ impl Get {
 }
 
 impl Command for Get {
-    fn run(&self) {
+    fn run(&self) -> Result<(), Box<dyn Error>> {
         let key = if self.key_hex {
             hex::decode(self.key.as_bytes()).unwrap()
         } else {
@@ -45,6 +47,7 @@ impl Command for Get {
                 panic!("Failed to get key: {}, error: {}", self.key, error);
             }
         };
+        Ok(())
     }
 
     fn args() -> App<'static, 'static> {
@@ -77,6 +80,7 @@ impl Command for Get {
                     .required(true)
                     .index(1),
             )
+            .into()
     }
 
     fn name() -> &'static str {

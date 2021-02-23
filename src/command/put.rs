@@ -2,6 +2,8 @@ use crate::command::traits::Command;
 use clap::{App, Arg, ArgMatches, SubCommand};
 use hex;
 use rocksdb::DB;
+use std::boxed::Box;
+use std::error::Error;
 
 #[derive(Debug)]
 pub struct Put {
@@ -25,7 +27,7 @@ impl Put {
 }
 
 impl Command for Put {
-    fn run(&self) {
+    fn run(&self) -> Result<(), Box<dyn Error>> {
         let key = if self.key_hex {
             hex::decode(self.key.as_bytes()).unwrap()
         } else {
@@ -47,6 +49,7 @@ impl Command for Put {
                 );
             }
         };
+        Ok(())
     }
 
     fn args() -> App<'static, 'static> {

@@ -4,5 +4,8 @@ use command::create;
 
 fn main() {
     let cmd = create(cmd_parser::get_cmd_args());
-    cmd.run();
+    if let Err(_error) = cmd.run() {
+        println!("Failed: {}", _error);
+        std::process::exit(1);
+    }
 }

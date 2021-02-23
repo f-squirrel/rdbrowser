@@ -1,4 +1,6 @@
 use clap::App;
+use std::boxed::Box;
+use std::error::Error;
 
 pub trait Command {
     fn args() -> App<'static, 'static>
@@ -7,5 +9,5 @@ pub trait Command {
     fn name() -> &'static str
     where
         Self: Sized;
-    fn run(&self);
+    fn run(&self) -> Result<(), Box<dyn Error>>;
 }

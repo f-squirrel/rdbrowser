@@ -2,6 +2,8 @@ use crate::command::traits::Command;
 use clap::{App, Arg, ArgMatches, SubCommand};
 use hex;
 use rocksdb::DB;
+use std::boxed::Box;
+use std::error::Error;
 
 #[derive(Debug)]
 pub struct Delete {
@@ -18,23 +20,27 @@ impl Delete {
             key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
         }
     }
+    fn decode(str: &str) -> Result<Vec<u8>, hex::FromHexError> {
+        hex::decode(str.trim_start_matches("0x"))
+    }
 }
 
 impl Command for Delete {
-    fn run(&self) {
-        let key = if self.key_hex {
-            hex::decode(self.key.as_bytes()).unwrap()
+    fn run(&self) -> Result<(), Box<dyn Error>> {
+        let k = if self.key_hex {
+            Self::decode(&self.key)?
         } else {
-            self.key.clone().into_bytes()
+            self.key.as_bytes().into()
         };
-        match self.db.delete(key) {
+        match self.db.delete(k) {
             Ok(_) => {
                 println!("OK");
             }
             Err(error) => {
                 panic!("Failed to delete key: {} , error: {}", self.key, error);
             }
-        };
+        }
+        Ok(())
     }
 
     fn args() -> App<'static, 'static> {
@@ -60,6 +66,7 @@ impl Command for Delete {
                     .required(true)
                     .index(1),
             )
+            .into()
     }
 
     fn name() -> &'static str {

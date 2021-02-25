@@ -1,6 +1,6 @@
 use crate::command::traits::Command;
+use crate::utils;
 use clap::{App, Arg, ArgMatches, SubCommand};
-use hex;
 use rocksdb::DB;
 use std::boxed::Box;
 use std::error::Error;
@@ -27,7 +27,7 @@ impl Get {
 impl Command for Get {
     fn run(&self) -> Result<(), Box<dyn Error>> {
         let key = if self.key_hex {
-            hex::decode(self.key.as_bytes()).unwrap()
+            utils::hex::decode(&self.key)?
         } else {
             self.key.clone().into_bytes()
         };
@@ -37,7 +37,7 @@ impl Command for Get {
             }
             Ok(Some(content)) => {
                 let output = if self.value_hex {
-                    hex::encode(content)
+                    utils::hex::encode(content)
                 } else {
                     String::from_utf8(content).unwrap()
                 };

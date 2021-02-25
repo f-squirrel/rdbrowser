@@ -1,6 +1,6 @@
 use crate::command::traits::Command;
+use crate::utils;
 use clap::{App, Arg, ArgMatches, SubCommand};
-use hex;
 use rocksdb::DB;
 use std::boxed::Box;
 use std::error::Error;
@@ -29,12 +29,12 @@ impl Put {
 impl Command for Put {
     fn run(&self) -> Result<(), Box<dyn Error>> {
         let key = if self.key_hex {
-            hex::decode(self.key.as_bytes()).unwrap()
+            utils::hex::decode(&self.key)?
         } else {
             self.key.clone().into_bytes()
         };
         let value = if self.value_hex {
-            hex::decode(self.value.as_bytes()).unwrap()
+            utils::hex::decode(&self.value)?
         } else {
             self.value.clone().into_bytes()
         };

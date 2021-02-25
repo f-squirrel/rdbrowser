@@ -1,6 +1,6 @@
 use crate::command::traits::Command;
+use crate::utils;
 use clap::{App, Arg, ArgMatches, SubCommand};
-use hex;
 use rocksdb::DB;
 use std::boxed::Box;
 use std::error::Error;
@@ -20,15 +20,12 @@ impl Delete {
             key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
         }
     }
-    fn decode(str: &str) -> Result<Vec<u8>, hex::FromHexError> {
-        hex::decode(str.trim_start_matches("0x"))
-    }
 }
 
 impl Command for Delete {
     fn run(&self) -> Result<(), Box<dyn Error>> {
         let k = if self.key_hex {
-            Self::decode(&self.key)?
+            utils::hex::decode(&self.key)?
         } else {
             self.key.as_bytes().into()
         };

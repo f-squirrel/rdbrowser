@@ -65,7 +65,7 @@ fn basic_put_and_get() -> Result<(), Box<dyn std::error::Error>> {
 #[test]
 fn hex_put_and_get() -> Result<(), Box<dyn std::error::Error>> {
     let path = tempdir()?;
-    let key = "68656c6c6f";
+    let key = "0x68656c6c6f";
     let value = "776f726c64";
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--create_if_missing")
@@ -85,7 +85,7 @@ fn hex_put_and_get() -> Result<(), Box<dyn std::error::Error>> {
         .arg(key);
     cmd.assert()
         .success()
-        .stdout(format!("{}\n", value))
+        .stdout(format!("0x{}\n", value))
         .code(0);
     Ok(())
 }
@@ -141,7 +141,7 @@ fn value_hex_put_and_get() -> Result<(), Box<dyn std::error::Error>> {
         .arg(key);
     cmd.assert()
         .success()
-        .stdout(format!("{}\n", value))
+        .stdout(format!("0x{}\n", value))
         .code(0);
     Ok(())
 }

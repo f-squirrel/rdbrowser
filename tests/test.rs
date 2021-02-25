@@ -173,7 +173,7 @@ fn basic_delete() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db").arg(path.path()).arg("get").arg(key);
-    cmd.assert().success().stdout("Not Found\n").code(0);
+    cmd.assert().success().stderr("Not Found\n").code(0);
     Ok(())
 }
 
@@ -204,6 +204,6 @@ fn multiple_word_put_get_delete() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db").arg(path.path()).arg("get").arg(key);
-    cmd.assert().success().stdout("Not Found\n").code(0);
+    cmd.assert().success().stderr("Not Found\n").code(0);
     Ok(())
 }

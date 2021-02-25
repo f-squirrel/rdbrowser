@@ -38,17 +38,8 @@ impl Command for Put {
         } else {
             self.value.clone().into_bytes()
         };
-        match self.db.put(key, value) {
-            Ok(_) => {
-                println!("OK");
-            }
-            Err(error) => {
-                panic!(
-                    "Failed to put key: {} value: {}, error: {}",
-                    self.key, self.value, error
-                );
-            }
-        };
+        self.db.put(key, value)?;
+        println!("OK");
         Ok(())
     }
 

@@ -31,22 +31,19 @@ impl Command for Get {
         } else {
             self.key.clone().into_bytes()
         };
-        match self.db.get(key) {
-            Ok(None) => {
-                println!("Not Found");
+        match self.db.get(key)? {
+            None => {
+                eprintln!("Not Found");
             }
-            Ok(Some(content)) => {
+            Some(value) => {
                 let output = if self.value_hex {
-                    utils::hex::encode(content)
+                    utils::hex::encode(value)
                 } else {
-                    String::from_utf8(content).unwrap()
+                    String::from_utf8(value).unwrap()
                 };
                 println!("{}", output);
             }
-            Err(error) => {
-                panic!("Failed to get key: {}, error: {}", self.key, error);
-            }
-        };
+        }
         Ok(())
     }
 

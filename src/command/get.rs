@@ -6,30 +6,30 @@ use std::boxed::Box;
 use std::error::Error;
 
 #[derive(Debug)]
-pub struct Get {
+pub struct Get<'a> {
     db: DB,
-    key: String,
+    key: &'a str,
     key_hex: bool,
     value_hex: bool,
 }
 
-impl Get {
-    pub fn new(db: DB, matches: &ArgMatches) -> Get {
+impl<'a> Get<'a> {
+    pub fn new(db: DB, matches: &'a ArgMatches<'a>) -> Get<'a> {
         Get {
             db,
-            key: matches.value_of("KEY").unwrap().into(),
+            key: matches.value_of("KEY").unwrap(),
             key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
             value_hex: matches.is_present("value_hex") || matches.is_present("hex"),
         }
     }
 }
 
-impl Command for Get {
+impl<'a> Command for Get<'a> {
     fn run(&self) -> Result<(), Box<dyn Error>> {
         let key = if self.key_hex {
             utils::hex::decode(&self.key)?
         } else {
-            self.key.clone().into_bytes()
+            self.key.as_bytes().into()
         };
         match self.db.get(key)? {
             None => {

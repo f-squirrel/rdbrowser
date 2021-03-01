@@ -6,23 +6,23 @@ use std::boxed::Box;
 use std::error::Error;
 
 #[derive(Debug)]
-pub struct Delete {
+pub struct Delete<'a> {
     db: DB,
-    key: String,
+    key: &'a str,
     key_hex: bool,
 }
 
-impl Delete {
-    pub fn new(db: DB, matches: &ArgMatches) -> Delete {
+impl<'a> Delete<'a> {
+    pub fn new(db: DB, matches: &'a ArgMatches<'a>) -> Delete<'a> {
         Delete {
             db,
-            key: matches.value_of("KEY").unwrap().into(),
+            key: matches.value_of("KEY").unwrap(),
             key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
         }
     }
 }
 
-impl Command for Delete {
+impl<'a> Command for Delete<'a> {
     fn run(&self) -> Result<(), Box<dyn Error>> {
         let k = if self.key_hex {
             utils::hex::decode(&self.key)?

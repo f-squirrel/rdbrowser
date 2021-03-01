@@ -1,8 +1,8 @@
-use super::command::{delete, get, put};
+use super::command::{batchput, delete, get, put};
 use crate::command::traits::Command;
 use clap::{App, AppSettings, Arg, ArgMatches};
 
-pub fn get_cmd_args() -> ArgMatches<'static> {
+pub fn get_cmd_args<'a>() -> ArgMatches<'a> {
     App::new("rdBrowser")
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .setting(AppSettings::ColoredHelp)
@@ -35,5 +35,6 @@ pub fn get_cmd_args() -> ArgMatches<'static> {
         .subcommand(put::Put::args())
         .subcommand(get::Get::args())
         .subcommand(delete::Delete::args())
+        .subcommand(batchput::BatchPut::args())
         .get_matches()
 }

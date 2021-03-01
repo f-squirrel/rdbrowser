@@ -207,3 +207,155 @@ fn multiple_word_put_get_delete() -> Result<(), Box<dyn std::error::Error>> {
     cmd.assert().success().stderr("Not Found\n").code(0);
     Ok(())
 }
+
+#[test]
+fn batchput_and_get() -> Result<(), Box<dyn std::error::Error>> {
+    let path = tempdir()?;
+    let kv = [
+        "1111", "1111", "2222", "2222", "3333", "3333", "4444", "4444",
+    ];
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("batchput")
+        .args(&kv);
+    cmd.assert().success().stdout("OK\n");
+
+    for i in (0..kv.len()).step_by(2) {
+        let mut cmd = Command::cargo_bin("rdbrowser")?;
+        cmd.arg("--db").arg(path.path()).arg("get").arg(kv[i]);
+        cmd.assert()
+            .success()
+            .stdout(format!("{}\n", kv[i + 1]))
+            .code(0);
+    }
+    Ok(())
+}
+
+#[test]
+fn batchput_multi_word_and_get() -> Result<(), Box<dyn std::error::Error>> {
+    let path = tempdir()?;
+    let kv = ["hey hey", "hoy hoy", "bla bla", "tra tra"];
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("batchput")
+        .args(&kv);
+    cmd.assert().success().stdout("OK\n");
+
+    for i in (0..kv.len()).step_by(2) {
+        let mut cmd = Command::cargo_bin("rdbrowser")?;
+        cmd.arg("--db").arg(path.path()).arg("get").arg(kv[i]);
+        cmd.assert()
+            .success()
+            .stdout(format!("{}\n", kv[i + 1]))
+            .code(0);
+    }
+    Ok(())
+}
+#[test]
+fn batchput_and_get_hex() -> Result<(), Box<dyn std::error::Error>> {
+    {
+        let path = tempdir()?;
+        let kv = [
+            "31313131", "1111", "32323232", "2222", "33333333", "3333", "34343434", "4444",
+        ];
+        let mut cmd = Command::cargo_bin("rdbrowser")?;
+        cmd.arg("--create_if_missing")
+            .arg("--db")
+            .arg(path.path())
+            .arg("batchput")
+            .arg("--key_hex")
+            .args(&kv);
+        cmd.assert().success().stdout("OK\n");
+
+        for i in (0..kv.len()).step_by(2) {
+            let mut cmd = Command::cargo_bin("rdbrowser")?;
+            cmd.arg("--db")
+                .arg(path.path())
+                .arg("get")
+                .arg("--key_hex")
+                .arg(kv[i]);
+            cmd.assert()
+                .success()
+                .stdout(format!("{}\n", kv[i + 1]))
+                .code(0);
+        }
+    }
+    {
+        let path = tempdir()?;
+        let kv = [
+            "1111", "31313131", "2222", "32323232", "3333", "33333333", "4444", "34343434",
+        ];
+        let mut cmd = Command::cargo_bin("rdbrowser")?;
+        cmd.arg("--create_if_missing")
+            .arg("--db")
+            .arg(path.path())
+            .arg("batchput")
+            .arg("--value_hex")
+            .args(&kv);
+        cmd.assert().success().stdout("OK\n");
+
+        for i in (0..kv.len()).step_by(2) {
+            let mut cmd = Command::cargo_bin("rdbrowser")?;
+            cmd.arg("--db")
+                .arg(path.path())
+                .arg("get")
+                .arg("--value_hex")
+                .arg(kv[i]);
+            cmd.assert()
+                .success()
+                .stdout(format!("0x{}\n", kv[i + 1]))
+                .code(0);
+        }
+    }
+    {
+        let path = tempdir()?;
+        let kv = [
+            "31313131", "31313131", "32323232", "32323232", "33333333", "33333333", "34343434",
+            "34343434",
+        ];
+        let mut cmd = Command::cargo_bin("rdbrowser")?;
+        cmd.arg("--create_if_missing")
+            .arg("--db")
+            .arg(path.path())
+            .arg("batchput")
+            .arg("--hex")
+            .args(&kv);
+        cmd.assert().success().stdout("OK\n");
+
+        for i in (0..kv.len()).step_by(2) {
+            let mut cmd = Command::cargo_bin("rdbrowser")?;
+            cmd.arg("--db")
+                .arg(path.path())
+                .arg("get")
+                .arg("--hex")
+                .arg(kv[i]);
+            cmd.assert()
+                .success()
+                .stdout(format!("0x{}\n", kv[i + 1]))
+                .code(0);
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn batchput_wrong_input() -> Result<(), Box<dyn std::error::Error>> {
+    let path = tempdir()?;
+    let kv = ["1111", "1111", "2222"];
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("batchput")
+        .args(&kv);
+    cmd.assert().failure().stderr(format!(
+        "Failed: Keys and values bnumber has to be even, given {}\n",
+        kv.len()
+    ));
+
+    Ok(())
+}

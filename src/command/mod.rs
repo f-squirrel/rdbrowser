@@ -6,6 +6,7 @@ pub mod batchput;
 pub mod delete;
 pub mod get;
 pub mod put;
+pub mod scan;
 pub mod traits;
 
 pub fn create<'a>(matches: &'a ArgMatches<'a>) -> Box<dyn traits::Command + 'a> {
@@ -18,6 +19,7 @@ pub fn create<'a>(matches: &'a ArgMatches<'a>) -> Box<dyn traits::Command + 'a> 
         ("get", Some(get)) => Box::new(get::Get::new(db, get)),
         ("delete", Some(delete)) => Box::new(delete::Delete::new(db, delete)),
         ("batchput", Some(batchput)) => Box::new(batchput::BatchPut::new(db, batchput)),
+        ("scan", Some(scan)) => Box::new(scan::Scan::new(db, scan)),
         _ => unreachable!(),
     }
 }

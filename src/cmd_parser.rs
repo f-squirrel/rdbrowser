@@ -1,4 +1,4 @@
-use super::command::{batchput, delete, get, put};
+use super::command::{batchput, delete, get, put, scan};
 use crate::command::traits::Command;
 use clap::{App, AppSettings, Arg, ArgMatches};
 
@@ -36,5 +36,6 @@ pub fn get_cmd_args<'a>() -> ArgMatches<'a> {
         .subcommand(get::Get::args())
         .subcommand(delete::Delete::args())
         .subcommand(batchput::BatchPut::args())
+        .subcommand(scan::Scan::args())
         .get_matches()
 }

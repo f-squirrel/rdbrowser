@@ -255,6 +255,7 @@ fn batchput_multi_word_and_get() -> Result<(), Box<dyn std::error::Error>> {
     }
     Ok(())
 }
+
 #[test]
 fn batchput_and_get_hex() -> Result<(), Box<dyn std::error::Error>> {
     {
@@ -357,5 +358,63 @@ fn batchput_wrong_input() -> Result<(), Box<dyn std::error::Error>> {
         kv.len()
     ));
 
+    Ok(())
+}
+
+#[test]
+fn basic_scan() -> Result<(), Box<dyn std::error::Error>> {
+    let kv = [
+        "1111", "1111", "2222", "2222", "3333", "3333", "4444", "4444",
+    ];
+    let path = tempdir()?;
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("batchput")
+        .args(&kv);
+    cmd.assert().success().stdout("OK\n");
+
+    let mut expected_output = String::new();
+    for i in (0..kv.len()).step_by(2) {
+        expected_output.push_str(format!("{} : {}\n", kv[i], kv[i + 1]).as_str());
+    }
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan");
+    cmd.assert().success().stdout(expected_output);
+
+    cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan")
+        .arg("--value_hex");
+    cmd.assert()
+        .success()
+        .stdout("1111 : 0x31313131\n2222 : 0x32323232\n3333 : 0x33333333\n4444 : 0x34343434\n");
+
+    cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan")
+        .arg("--key_hex");
+    cmd.assert()
+        .success()
+        .stdout("0x31313131 : 1111\n0x32323232 : 2222\n0x33333333 : 3333\n0x34343434 : 4444\n");
+
+    cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan")
+        .arg("--hex");
+    cmd.assert()
+            .success()
+            .stdout("0x31313131 : 0x31313131\n0x32323232 : 0x32323232\n0x33333333 : 0x33333333\n0x34343434 : 0x34343434\n");
     Ok(())
 }

@@ -485,3 +485,36 @@ fn scan_from_to() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
+#[test]
+fn delete_range() -> Result<(), Box<dyn std::error::Error>> {
+    let kv = [
+        "1111", "1111", "2222", "2222", "3333", "3333", "4444", "4444",
+    ];
+    let path = tempdir()?;
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("batchput")
+        .args(&kv);
+    cmd.assert().success().stdout("OK\n");
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("deleterange")
+        .arg("2222")
+        .arg("4444");
+    cmd.assert().success().stdout("OK\n");
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan");
+    cmd.assert().success().stdout("1111 : 1111\n4444 : 4444\n");
+
+    Ok(())
+}

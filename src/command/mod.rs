@@ -18,11 +18,9 @@ pub fn create<'a>(matches: &'a ArgMatches<'a>) -> Box<dyn traits::Command + 'a> 
     let db = DB::open_cf(
         &opts,
         matches.value_of("db").unwrap(),
-        &[rocksdb::DEFAULT_COLUMN_FAMILY_NAME],
+        &[matches.value_of("column_family").unwrap()],
     )
     .unwrap();
-    //let db = DB::open(&opts, matches.value_of("db").unwrap()).unwrap();
-    //let db = DB::open_cf(&opts, matches.value_of("db").unwrap(), "default").unwrap();
     match matches.subcommand() {
         ("put", Some(put)) => Box::new(put::Put::new(db, put)),
         ("get", Some(get)) => Box::new(get::Get::new(db, get)),

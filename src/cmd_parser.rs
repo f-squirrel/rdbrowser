@@ -32,6 +32,14 @@ pub fn get_cmd_args<'a>() -> ArgMatches<'a> {
                 .required(false)
                 .takes_value(false),
         )
+        .arg(
+            Arg::with_name("column_family")
+                .long("column_family")
+                .help("Name of the column family to operate on. default: default column family")
+                .required(false)
+                .takes_value(true)
+                .default_value(rocksdb::DEFAULT_COLUMN_FAMILY_NAME),
+        )
         .subcommand(put::Put::args())
         .subcommand(get::Get::args())
         .subcommand(delete::Delete::args())

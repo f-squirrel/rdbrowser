@@ -449,6 +449,18 @@ fn scan_from_to() -> Result<(), Box<dyn std::error::Error>> {
         .arg("--db")
         .arg(path.path())
         .arg("scan")
+        .arg("--from")
+        .arg("2")
+        .arg("--to")
+        .arg("4");
+    cmd.assert().success().stdout("2222 : 2222\n3333 : 3333\n");
+
+    cmd.assert().success().stdout("2222 : 2222\n3333 : 3333\n");
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan")
         .arg("--to")
         .arg("4444");
     cmd.assert()
@@ -516,5 +528,20 @@ fn delete_range() -> Result<(), Box<dyn std::error::Error>> {
         .arg("scan");
     cmd.assert().success().stdout("1111 : 1111\n4444 : 4444\n");
 
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("deleterange")
+        .arg("1111")
+        .arg("4");
+    cmd.assert().success().stdout("OK\n");
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan");
+    cmd.assert().success().stdout("4444 : 4444\n");
     Ok(())
 }

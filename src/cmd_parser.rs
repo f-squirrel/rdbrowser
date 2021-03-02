@@ -3,7 +3,7 @@ use crate::command::traits::Command;
 use clap::{App, AppSettings, Arg, ArgMatches};
 
 pub fn get_cmd_args<'a>() -> ArgMatches<'a> {
-    App::new("rdBrowser")
+    App::new(env!("CARGO_PKG_NAME"))
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .setting(AppSettings::ColoredHelp)
         .setting(AppSettings::VersionlessSubcommands)
@@ -35,7 +35,7 @@ pub fn get_cmd_args<'a>() -> ArgMatches<'a> {
         .arg(
             Arg::with_name("column_family")
                 .long("column_family")
-                .help("Name of the column family to operate on. default: default column family")
+                .help("Name of the column family to operate on")
                 .required(false)
                 .takes_value(true)
                 .default_value(rocksdb::DEFAULT_COLUMN_FAMILY_NAME),

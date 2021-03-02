@@ -418,3 +418,70 @@ fn basic_scan() -> Result<(), Box<dyn std::error::Error>> {
             .stdout("0x31313131 : 0x31313131\n0x32323232 : 0x32323232\n0x33333333 : 0x33333333\n0x34343434 : 0x34343434\n");
     Ok(())
 }
+
+#[test]
+fn scan_from_to() -> Result<(), Box<dyn std::error::Error>> {
+    let kv = [
+        "1111", "1111", "2222", "2222", "3333", "3333", "4444", "4444",
+    ];
+    let path = tempdir()?;
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("batchput")
+        .args(&kv);
+    cmd.assert().success().stdout("OK\n");
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan")
+        .arg("--from")
+        .arg("2222")
+        .arg("--to")
+        .arg("4444");
+    cmd.assert().success().stdout("2222 : 2222\n3333 : 3333\n");
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan")
+        .arg("--to")
+        .arg("4444");
+    cmd.assert()
+        .success()
+        .stdout("1111 : 1111\n2222 : 2222\n3333 : 3333\n");
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan")
+        .arg("--key_hex")
+        .arg("--from")
+        .arg("32323232")
+        .arg("--to")
+        .arg("34343434");
+    cmd.assert()
+        .success()
+        .stdout("0x32323232 : 2222\n0x33333333 : 3333\n");
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("scan")
+        .arg("--value_hex")
+        .arg("--from")
+        .arg("2222")
+        .arg("--to")
+        .arg("4444");
+    cmd.assert()
+        .success()
+        .stdout("2222 : 0x32323232\n3333 : 0x33333333\n");
+
+    Ok(())
+}

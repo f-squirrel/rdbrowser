@@ -1,31 +1,79 @@
 use crate::command::traits::Command;
 use crate::utils;
 use clap::{App, Arg, ArgMatches, SubCommand};
-use rocksdb::{IteratorMode, DB};
+use rocksdb::{Direction, IteratorMode, DB};
 use std::boxed::Box;
+use std::cmp;
 use std::error::Error;
+use std::option::Option;
+
+fn compare(first: &[u8], second: &[u8]) -> i32 {
+    for i in 0..cmp::min(first.len(), second.len()) {
+        //
+        if first[i] < second[i] {
+            return -1;
+        }
+        if first[i] > second[i] {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 #[derive(Debug)]
-pub struct Scan {
+pub struct Scan<'a> {
     db: DB,
+    from: Option<&'a str>,
+    to: Option<&'a str>,
     key_hex: bool,
     value_hex: bool,
 }
 
-impl Scan {
-    pub fn new(db: DB, matches: &ArgMatches) -> Scan {
+impl<'a> Scan<'a> {
+    pub fn new(db: DB, matches: &'a ArgMatches<'a>) -> Scan<'a> {
         Scan {
             db,
+            from: matches.value_of("from"),
+            to: matches.value_of("to"),
             key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
             value_hex: matches.is_present("value_hex") || matches.is_present("hex"),
         }
     }
 }
 
-impl Command for Scan {
+impl<'a> Command for Scan<'a> {
     fn run(&self) -> Result<(), Box<dyn Error>> {
-        let iter = self.db.iterator(IteratorMode::Start);
+        let iter = match self.from {
+            None => self.db.iterator(IteratorMode::Start),
+            Some(from) => {
+                let f = if self.key_hex {
+                    utils::hex::decode(from)?
+                } else {
+                    Vec::from(from.as_bytes())
+                };
+                self.db
+                    .iterator(IteratorMode::From(f.as_ref(), Direction::Forward))
+            }
+        };
+        let end = match self.to {
+            None => None,
+            Some(to) => {
+                if self.key_hex {
+                    Some(utils::hex::decode(to)?)
+                } else {
+                    Some(Vec::from(to.as_bytes()))
+                }
+            }
+        };
         for (key, value) in iter {
+            match end {
+                None => {}
+                Some(ref e) => {
+                    if compare(key.as_ref(), e.as_ref()) >= 0 {
+                        break;
+                    }
+                }
+            }
             let k = if self.key_hex {
                 utils::hex::encode(key.as_ref())
             } else {
@@ -64,6 +112,20 @@ impl Command for Scan {
                     .help("Key provided in hex format")
                     .required(false)
                     .takes_value(false),
+            )
+            .arg(
+                Arg::with_name("from")
+                    .long("from")
+                    .help("key to scan from")
+                    .required(false)
+                    .takes_value(true),
+            )
+            .arg(
+                Arg::with_name("to")
+                    .long("to")
+                    .help("key to scan to")
+                    .required(false)
+                    .takes_value(true),
             )
             .into()
     }

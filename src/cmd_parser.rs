@@ -2,7 +2,7 @@ use super::command::{batchput, delete, deleterange, get, put, scan};
 use crate::command::traits::Command;
 use clap::{App, AppSettings, Arg, ArgMatches};
 
-pub fn get_cmd_args<'a>() -> ArgMatches<'a> {
+pub fn build_cmd_args<'a>() -> ArgMatches<'a> {
     App::new(env!("CARGO_PKG_NAME"))
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .setting(AppSettings::ColoredHelp)

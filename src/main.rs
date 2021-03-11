@@ -2,14 +2,20 @@ mod cmd_parser;
 mod command;
 mod utils;
 use command::create;
-extern crate simple_error;
+use std::error::Error;
+
+// We need another function to make sure that all the objects
+// are gracefully dropped before std::process::exit is called
+fn real_main() -> Result<(), Box<dyn Error>> {
+    create(&cmd_parser::build_cmd_args())?.run()
+}
 
 fn main() {
-    let args = cmd_parser::build_cmd_args();
-    let cmd = create(&args);
-    if let Err(_error) = cmd.run() {
-        eprintln!("Failed: {}", _error);
-        drop(cmd);
-        std::process::exit(1);
+    match real_main() {
+        Ok(()) => {}
+        Err(error) => {
+            eprintln!("Failed: {}", error);
+            std::process::exit(1);
+        }
     }
 }

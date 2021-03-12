@@ -57,7 +57,6 @@ impl<'a> Command for Delete<'a> {
                     .required(true)
                     .index(1),
             )
-            .into()
     }
 
     fn name() -> &'static str {

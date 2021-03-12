@@ -75,7 +75,6 @@ impl<'a> Command for DeleteRange<'a> {
                     .required(true)
                     .index(2),
             )
-            .into()
     }
 
     fn name() -> &'static str {

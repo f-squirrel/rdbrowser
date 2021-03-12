@@ -1,5 +1,3 @@
-use hex;
-
 pub fn decode(str: &str) -> Result<Vec<u8>, hex::FromHexError> {
     hex::decode(str.to_lowercase().trim_start_matches("0x"))
 }

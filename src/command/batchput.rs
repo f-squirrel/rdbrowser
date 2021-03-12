@@ -83,7 +83,6 @@ impl<'a> Command for BatchPut<'a> {
                     .required(true)
                     .min_values(2),
             )
-            .into()
     }
 
     fn name() -> &'static str {

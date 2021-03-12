@@ -17,7 +17,7 @@ fn compare(first: &[u8], second: &[u8]) -> i32 {
             return 1;
         }
     }
-    return 0;
+    0
 }
 
 #[derive(Debug)]
@@ -127,7 +127,6 @@ impl<'a> Command for Scan<'a> {
                     .required(false)
                     .takes_value(true),
             )
-            .into()
     }
 
     fn name() -> &'static str {

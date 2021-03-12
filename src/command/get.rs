@@ -77,7 +77,6 @@ impl<'a> Command for Get<'a> {
                     .required(true)
                     .index(1),
             )
-            .into()
     }
 
     fn name() -> &'static str {

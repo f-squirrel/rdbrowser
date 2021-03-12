@@ -14,7 +14,7 @@ pub struct Get<'a> {
 }
 
 impl<'a> Get<'a> {
-    pub fn new(matches: &'a ArgMatches<'a>) -> Result<Box<dyn Command + 'a>, Box<dyn Error>> {
+    pub fn create(matches: &'a ArgMatches<'a>) -> Result<Box<dyn Command + 'a>, Box<dyn Error>> {
         let opts = Self::build_options(matches);
         let db = DB::open_cf(
             &opts,

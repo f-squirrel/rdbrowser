@@ -15,14 +15,23 @@ pub struct BatchPut<'a> {
 }
 
 impl<'a> BatchPut<'a> {
-    pub fn new(db: DB, matches: &'a ArgMatches<'a>) -> BatchPut<'a> {
-        let kv_str: Vec<_> = matches.values_of("KEY-VALUE").unwrap().collect();
-        BatchPut {
+    pub fn new(matches: &'a ArgMatches<'a>) -> Result<Box<dyn Command + 'a>, Box<dyn Error>> {
+        let opts = Self::build_options(matches);
+        let db = DB::open_cf(
+            &opts,
+            matches.value_of("db").unwrap(),
+            &[matches.value_of("column_family").unwrap()],
+        )?;
+        let subcommand_matches = matches.subcommand_matches(Self::name()).unwrap();
+        let kv_str: Vec<_> = subcommand_matches.values_of("KEY-VALUE").unwrap().collect();
+        Ok(std::boxed::Box::new(BatchPut {
             db,
             key_values: kv_str,
-            key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
-            value_hex: matches.is_present("value_hex") || matches.is_present("hex"),
-        }
+            key_hex: subcommand_matches.is_present("key_hex")
+                || subcommand_matches.is_present("hex"),
+            value_hex: subcommand_matches.is_present("value_hex")
+                || subcommand_matches.is_present("hex"),
+        }))
     }
 }
 

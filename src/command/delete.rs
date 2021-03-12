@@ -13,12 +13,20 @@ pub struct Delete<'a> {
 }
 
 impl<'a> Delete<'a> {
-    pub fn new(db: DB, matches: &'a ArgMatches<'a>) -> Delete<'a> {
-        Delete {
+    pub fn new(matches: &'a ArgMatches<'a>) -> Result<Box<dyn Command + 'a>, Box<dyn Error>> {
+        let opts = Self::build_options(matches);
+        let db = DB::open_cf(
+            &opts,
+            matches.value_of("db").unwrap(),
+            &[matches.value_of("column_family").unwrap()],
+        )?;
+        let subcommand_matches = matches.subcommand_matches(Self::name()).unwrap();
+        Ok(std::boxed::Box::new(Delete {
             db,
-            key: matches.value_of("KEY").unwrap(),
-            key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
-        }
+            key: subcommand_matches.value_of("KEY").unwrap(),
+            key_hex: subcommand_matches.is_present("key_hex")
+                || subcommand_matches.is_present("hex"),
+        }))
     }
 }
 

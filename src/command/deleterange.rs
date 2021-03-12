@@ -14,13 +14,21 @@ pub struct DeleteRange<'a> {
 }
 
 impl<'a> DeleteRange<'a> {
-    pub fn new(db: DB, matches: &'a ArgMatches<'a>) -> DeleteRange<'a> {
-        DeleteRange {
+    pub fn new(matches: &'a ArgMatches<'a>) -> Result<Box<dyn Command + 'a>, Box<dyn Error>> {
+        let opts = Self::build_options(matches);
+        let db = DB::open_cf(
+            &opts,
+            matches.value_of("db").unwrap(),
+            &[matches.value_of("column_family").unwrap()],
+        )?;
+        let subcommand_matches = matches.subcommand_matches(Self::name()).unwrap();
+        Ok(std::boxed::Box::new(DeleteRange {
             db,
-            from_key: matches.value_of("BEGIN KEY").unwrap(),
-            to_key: matches.value_of("END KEY").unwrap(),
-            key_hex: matches.is_present("key_hex") || matches.is_present("hex"),
-        }
+            from_key: subcommand_matches.value_of("BEGIN KEY").unwrap(),
+            to_key: subcommand_matches.value_of("END KEY").unwrap(),
+            key_hex: subcommand_matches.is_present("key_hex")
+                || subcommand_matches.is_present("hex"),
+        }))
     }
 }
 

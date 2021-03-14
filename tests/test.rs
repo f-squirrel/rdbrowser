@@ -1,6 +1,9 @@
 use assert_cmd::Command;
 use predicates::prelude::*; // Used for writing assertions
 use tempfile::tempdir;
+extern crate glob;
+use glob::glob;
+use std::io::Write;
 
 #[test]
 fn missing_arguments() -> Result<(), Box<dyn std::error::Error>> {
@@ -543,5 +546,73 @@ fn delete_range() -> Result<(), Box<dyn std::error::Error>> {
         .arg(path.path())
         .arg("scan");
     cmd.assert().success().stdout("4444 : 4444\n");
+    Ok(())
+}
+
+#[test]
+fn checkconsistency() -> Result<(), Box<dyn std::error::Error>> {
+    let path = tempdir()?;
+    let key = "hello";
+    let value = "world";
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("put")
+        .arg(key)
+        .arg(value);
+    cmd.assert().success().stdout("OK\n");
+
+    cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("put")
+        .arg("hello1")
+        .arg("value1");
+    cmd.assert().success().stdout("OK\n");
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--db").arg(path.path()).arg("get").arg(key);
+    cmd.assert()
+        .success()
+        .stdout(format!("{}\n", value))
+        .code(0);
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--db").arg(path.path()).arg("checkconsistency");
+    cmd.assert().success().stdout("OK\n").code(0);
+
+    let paths: Vec<_> = glob(path.path().join("*.sst").to_str().unwrap())
+        .unwrap()
+        .collect();
+    assert_ne!(paths.len(), 0);
+
+    let sst_file_path = paths[0].as_ref().unwrap().to_str().unwrap();
+    std::fs::remove_file(sst_file_path)?;
+    let mut sst_file = std::fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .open(sst_file_path)
+        .unwrap();
+    sst_file.write_all(b"EVIL")?;
+    sst_file.flush()?;
+    sst_file.sync_all()?;
+    drop(sst_file);
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--db").arg(path.path()).arg("checkconsistency");
+    cmd.assert()
+        .failure()
+        .code(1)
+        .stderr(predicate::str::contains("Failed: Corruption:"));
+
+    std::fs::remove_file(sst_file_path)?;
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--db").arg(path.path()).arg("checkconsistency");
+    cmd.assert()
+        .failure()
+        .code(1)
+        .stderr(predicate::str::contains("Failed: IO error:"));
     Ok(())
 }

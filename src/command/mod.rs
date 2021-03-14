@@ -3,6 +3,7 @@ use std::boxed::Box;
 use std::error::Error;
 
 pub mod batchput;
+pub mod checkconsistency;
 pub mod delete;
 pub mod deleterange;
 pub mod get;
@@ -20,6 +21,7 @@ pub fn create<'a>(
         ("batchput", Some(_)) => batchput::BatchPut::create(matches),
         ("scan", Some(_)) => scan::Scan::create(matches),
         ("deleterange", Some(_)) => deleterange::DeleteRange::create(matches),
+        ("checkconsistency", Some(_)) => checkconsistency::CheckConsistency::create(matches),
         _ => unreachable!(),
     }
 }

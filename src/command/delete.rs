@@ -31,7 +31,7 @@ impl<'a> Delete<'a> {
 }
 
 impl<'a> Command for Delete<'a> {
-    fn run(&self) -> Result<(), Box<dyn Error>> {
+    fn run(&mut self) -> Result<(), Box<dyn Error>> {
         let k = if self.key_hex {
             utils::hex::decode(&self.key)?
         } else {

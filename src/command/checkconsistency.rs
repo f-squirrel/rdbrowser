@@ -22,7 +22,7 @@ impl<'a> CheckConsistency {
 }
 
 impl<'a> Command for CheckConsistency {
-    fn run(&self) -> Result<(), Box<dyn Error>> {
+    fn run(&mut self) -> Result<(), Box<dyn Error>> {
         println!("OK");
         Ok(())
     }

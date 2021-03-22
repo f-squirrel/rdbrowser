@@ -33,7 +33,7 @@ impl<'a> DeleteRange<'a> {
 }
 
 impl<'a> Command for DeleteRange<'a> {
-    fn run(&self) -> Result<(), Box<dyn Error>> {
+    fn run(&mut self) -> Result<(), Box<dyn Error>> {
         let (from, to) = if self.key_hex {
             (
                 utils::hex::decode(&self.from_key)?,

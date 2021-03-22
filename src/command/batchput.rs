@@ -36,7 +36,7 @@ impl<'a> BatchPut<'a> {
 }
 
 impl<'a> Command for BatchPut<'a> {
-    fn run(&self) -> Result<(), Box<dyn Error>> {
+    fn run(&mut self) -> Result<(), Box<dyn Error>> {
         let mut batch = WriteBatch::default();
         if self.key_values.len() % 2 != 0 {
             return Err(Box::new(SimpleError::new(format!(

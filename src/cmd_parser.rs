@@ -1,4 +1,4 @@
-use super::command::{batchput, checkconsistency, delete, deleterange, get, put, scan};
+use super::command::{batchput, checkconsistency, delete, deleterange, dump, get, put, scan};
 use crate::command::traits::Command;
 use clap::{App, AppSettings, Arg, ArgMatches};
 
@@ -47,5 +47,6 @@ pub fn build_cmd_args<'a>() -> ArgMatches<'a> {
         .subcommand(scan::Scan::args())
         .subcommand(deleterange::DeleteRange::args())
         .subcommand(checkconsistency::CheckConsistency::args())
+        .subcommand(dump::Dump::args())
         .get_matches()
 }

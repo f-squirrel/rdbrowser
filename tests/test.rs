@@ -3,6 +3,7 @@ use predicates::prelude::*; // Used for writing assertions
 use tempfile::tempdir;
 extern crate glob;
 use glob::glob;
+use std::io::Read;
 use std::io::Write;
 
 #[test]
@@ -614,5 +615,63 @@ fn checkconsistency() -> Result<(), Box<dyn std::error::Error>> {
         .failure()
         .code(1)
         .stderr(predicate::str::contains("Failed: IO error:"));
+    Ok(())
+}
+
+#[test]
+fn dump() -> Result<(), Box<dyn std::error::Error>> {
+    let path = tempdir()?;
+    let kv = [
+        "1111", "1111", "2222", "2222", "3333", "3333", "4444", "4444",
+    ];
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--create_if_missing")
+        .arg("--db")
+        .arg(path.path())
+        .arg("batchput")
+        .args(&kv);
+    cmd.assert().success().stdout("OK\n");
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--db")
+        .arg(path.path())
+        .arg("dump")
+        .arg("--output")
+        .arg("./dump.txt");
+    cmd.assert().success();
+
+    let mut f = std::fs::File::open("./dump.txt")?;
+    let mut contents = String::new();
+    f.read_to_string(&mut contents)?;
+
+    assert_eq!(
+        contents,
+        r"1111 ==> 1111
+2222 ==> 2222
+3333 ==> 3333
+4444 ==> 4444
+"
+    );
+
+    let mut cmd = Command::cargo_bin("rdbrowser")?;
+    cmd.arg("--db")
+        .arg(path.path())
+        .arg("dump")
+        .arg("--max_keys")
+        .arg("2")
+        .arg("--output")
+        .arg("./dump.txt");
+    cmd.assert().success();
+
+    let mut f = std::fs::File::open("./dump.txt")?;
+    let mut contents = String::new();
+    f.read_to_string(&mut contents)?;
+
+    assert_eq!(
+        contents,
+        r"1111 ==> 1111
+2222 ==> 2222
+"
+    );
     Ok(())
 }

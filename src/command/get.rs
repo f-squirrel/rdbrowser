@@ -34,7 +34,7 @@ impl<'a> Get<'a> {
 }
 
 impl<'a> Command for Get<'a> {
-    fn run(&self) -> Result<(), Box<dyn Error>> {
+    fn run(&mut self) -> Result<(), Box<dyn Error>> {
         let key = if self.key_hex {
             utils::hex::decode(&self.key)?
         } else {

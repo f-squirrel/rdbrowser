@@ -6,6 +6,7 @@ pub mod batchput;
 pub mod checkconsistency;
 pub mod delete;
 pub mod deleterange;
+pub mod dump;
 pub mod get;
 pub mod put;
 pub mod scan;
@@ -22,6 +23,7 @@ pub fn create<'a>(
         ("scan", Some(_)) => scan::Scan::create(matches),
         ("deleterange", Some(_)) => deleterange::DeleteRange::create(matches),
         ("checkconsistency", Some(_)) => checkconsistency::CheckConsistency::create(matches),
+        ("dump", Some(_)) => dump::Dump::create(matches),
         _ => unreachable!(),
     }
 }

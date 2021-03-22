@@ -18,5 +18,5 @@ pub trait Command {
     fn name() -> &'static str
     where
         Self: Sized;
-    fn run(&self) -> Result<(), Box<dyn std::error::Error>>;
+    fn run(&mut self) -> Result<(), Box<dyn std::error::Error>>;
 }

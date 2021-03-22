@@ -60,14 +60,14 @@ impl<'a> Dump<'a> {
 
     fn print_key_value(&self, key: &[u8], value: &[u8]) -> String {
         let k = if self.key_hex {
-            utils::hex::encode(key.as_ref())
+            utils::hex::encode(key)
         } else {
-            String::from_utf8_lossy(key.as_ref()).into()
+            String::from_utf8_lossy(key).into()
         };
         let v = if self.value_hex {
-            utils::hex::encode(value.as_ref())
+            utils::hex::encode(value)
         } else {
-            String::from_utf8_lossy(value.as_ref()).into()
+            String::from_utf8_lossy(value).into()
         };
         format!("{}{}{}", k, DELIM, v)
     }

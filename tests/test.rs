@@ -632,15 +632,16 @@ fn dump() -> Result<(), Box<dyn std::error::Error>> {
         .args(&kv);
     cmd.assert().success().stdout("OK\n");
 
+    let temp_file_path = path.path().join("dump.txt");
     let mut cmd = Command::cargo_bin("rdbrowser")?;
     cmd.arg("--db")
-        .arg(path.path())
+        .arg(path.path().to_str().unwrap())
         .arg("dump")
         .arg("--output")
-        .arg("./dump.txt");
+        .arg(temp_file_path.clone());
     cmd.assert().success();
 
-    let mut f = std::fs::File::open("./dump.txt")?;
+    let mut f = std::fs::File::open(temp_file_path.as_path().clone())?;
     let mut contents = String::new();
     f.read_to_string(&mut contents)?;
 
@@ -660,10 +661,10 @@ fn dump() -> Result<(), Box<dyn std::error::Error>> {
         .arg("--max_keys")
         .arg("2")
         .arg("--output")
-        .arg("./dump.txt");
+        .arg(temp_file_path.clone());
     cmd.assert().success();
 
-    let mut f = std::fs::File::open("./dump.txt")?;
+    let mut f = std::fs::File::open(temp_file_path.clone())?;
     let mut contents = String::new();
     f.read_to_string(&mut contents)?;
 
